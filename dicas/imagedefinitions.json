@@ -1,0 +1,7 @@
+[
+    {
+        "name":"angular-app",
+        "imageUri":"431591413306.dkr.ecr.us-east-2.amazonaws.com/my-angular-app:latest"
+    }
+]
+

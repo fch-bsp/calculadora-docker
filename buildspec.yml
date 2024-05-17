@@ -1,0 +1,48 @@
+version: 0.2
+env:
+  variables:
+    ECR_REPO_NAME: my-angular-app
+  parameter-store:
+    DOCKERHUB_TOKEN: /dockerhub/token  # parametros do Security/dockerhub /token no AWS Parameter Store
+    DOCKERHUB_USER: /dockerhub/user    # parametros do Security/dockerhub /token no AWS Parameter Store
+
+phases:
+  pre_build:
+    commands:
+      # Etapa de pré-construção: Autenticação nos repositórios Docker Hub e Amazon ECR.    
+      - echo Logging in to Docker Hub
+      - echo $DOCKERHUB_TOKEN | docker login -u $DOCKERHUB_USER --password-stdin
+      # Aqui, estamos autenticando no Docker Hub usando as variáveis ​​de ambiente fornecidas v1
+      - echo Logging in to Amazon ECR
+      - aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
+      # Aqui, estamos autenticando no Amazon ECR usando o AWS CLI e as variáveis ​​de ambiente.
+
+      - export ECR_MAIN_URI="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+      - export ECR_IMAGE_URI="${ECR_MAIN_URI}/${ECR_REPO_NAME}:${CODEBUILD_RESOLVED_SOURCE_VERSION:0:8}"
+      # Atualizamos para exportar as variáveis ​​ECR_MAIN_URI e ECR_IMAGE_URI para uso posterior.
+
+  build: 
+    commands:
+      # Etapa de construção: Construção da imagem Docker.    
+      - echo Building Docker image
+      - docker build -t my-angular-app:latest .
+      # Atualizamos para especificar a tag "my-angular-app:latest" para a imagem sendo construída.
+
+  post_build:
+    commands:
+      # Etapa pós-construção: Marcação e envio da imagem Docker para o Amazon ECR, geração do arquivo de definição de imagem.    
+      - echo Tagging Docker image
+      - docker tag my-angular-app:latest ${ECR_IMAGE_URI}
+      # Atualizamos para marcar a imagem com a URI do ECR.
+
+      - echo Pushing Docker image to ECR
+      - docker push ${ECR_IMAGE_URI}
+      # Atualizamos para fazer o push da imagem para o ECR.
+
+      - echo Generating image definition file for ECS
+      - echo '[{"name":"angular-app","imageUri":"'$ECR_IMAGE_URI'"}]' > imagedefinition.json
+      # Atualizamos para gerar o arquivo de definição de imagem "imagedefinition.json" com a URI correta.
+
+artifacts:
+  files:
+    - imagedefinition.json

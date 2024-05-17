@@ -1,0 +1,29 @@
+
+
+
+
+
+fernando+1-at-431591413306
+
+r1JkOygQyUlDQoVyGwROdD30bESRwQBx8z3+xHXKSSQ=
+
+
+dicas 
+
+git add .
+git commit -a -m "Verion 4.0"
+git remote add origin https://git-codecommit.us-east-2.amazonaws.com/v1/repos/MyAngularDockerRepo
+git push origin master  
+
+
+
+
+
+https://gallery.ecr.aws/
+
+
+teste 
+
+
+https://www.youtube.com/watch?v=ARGmrYFfv44
+
