@@ -105,7 +105,7 @@ jobs:
         uses: ./.github/workflows/actions/custom-deploy-aws
         with:
           service-name: service-calculadora-fernando-dev
-          task-definition-path: .github/workflows/task-definitions/dev/task-definition-dev.json
+          task-definition-path: .github/workflows/task-definitions/dev/task-definition-dev.json 
           cluster-name: ${{ env.CLUSTER }}
           container-name: container-calculadora-80-tcp
           image-id: ${{ needs.build-image.outputs.image_builded }}
